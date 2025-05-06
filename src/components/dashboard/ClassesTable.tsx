@@ -34,7 +34,7 @@ export const ClassesTable = ({
   enableSearch = false
 }: ClassesTableProps) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   
   const { data: students = [] } = useQuery({
     queryKey: ['students'],
@@ -76,7 +76,7 @@ export const ClassesTable = ({
       classItem.room?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       getStudentNames(classItem.studentIds).toLowerCase().includes(searchTerm.toLowerCase());
       
-    const matchesCategory = categoryFilter === '' || classItem.category === categoryFilter;
+    const matchesCategory = categoryFilter === 'all' || classItem.category === categoryFilter;
     
     return matchesSearch && matchesCategory;
   });
@@ -141,7 +141,7 @@ export const ClassesTable = ({
                     <SelectValue placeholder="Filter by category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Categories</SelectItem>
+                    <SelectItem value="all">All Categories</SelectItem>
                     {categories.map((category) => (
                       <SelectItem key={category} value={category}>
                         {category}
