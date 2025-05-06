@@ -5,6 +5,8 @@ import { ClassesTable } from '@/components/dashboard/ClassesTable';
 import { getStudentClasses } from '@/lib/api-service';
 import { useAuth } from '@/context/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { motion } from 'framer-motion';
+import { StudentTimetable } from '@/components/dashboard/StudentTimetable';
 
 const StudentDashboard = () => {
   const { user } = useAuth();
@@ -17,10 +19,20 @@ const StudentDashboard = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <motion.div 
+        className="space-y-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
         <h1 className="text-2xl font-bold tracking-tight">Student Dashboard</h1>
         
-        <div className="grid grid-cols-1 gap-6">
+        <motion.div 
+          className="grid grid-cols-1 gap-6"
+          initial={{ y: 20 }}
+          animate={{ y: 0 }}
+          transition={{ delay: 0.1, duration: 0.4 }}
+        >
           <Card>
             <CardHeader>
               <CardTitle>Welcome, {user?.name}</CardTitle>
@@ -33,12 +45,15 @@ const StudentDashboard = () => {
             </CardContent>
           </Card>
           
+          <StudentTimetable />
+          
           <ClassesTable 
             classes={classes} 
-            isLoading={isLoading} 
+            isLoading={isLoading}
+            showDetails={true}
           />
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </DashboardLayout>
   );
 };

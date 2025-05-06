@@ -17,10 +17,31 @@ export interface Class {
   duration: number; // in minutes
   teacherId: string;
   studentIds: string[];
+  room?: string;
+  description?: string;
+  materials?: string[];
+  category?: string;
 }
 
 export interface Student {
   id: string;
   name: string;
   email: string;
+  major?: string;
+  year?: number;
+  studentId?: string;
+}
+
+export interface TimeTableEntry {
+  id: string;
+  subject: string;
+  time: string;
+  duration: number;
+  room?: string;
+  teacher?: string;
+}
+
+export interface DailyTimetable {
+  date: string;
+  classes: TimeTableEntry[];
 }

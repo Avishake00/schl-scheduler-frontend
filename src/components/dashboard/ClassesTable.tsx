@@ -1,18 +1,26 @@
 
-import { formatDate } from '@/lib/utils';
+import { formatDate, getDayOfWeek } from '@/lib/utils';
 import { Class } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { getAllStudents } from '@/lib/api-service';
 import { useQuery } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
+import { Badge } from '@/components/ui/badge';
 
 interface ClassesTableProps {
   classes: Class[];
   isLoading: boolean;
   showStudents?: boolean;
+  showDetails?: boolean;
 }
 
-export const ClassesTable = ({ classes, isLoading, showStudents = false }: ClassesTableProps) => {
+export const ClassesTable = ({ 
+  classes, 
+  isLoading, 
+  showStudents = false,
+  showDetails = false
+}: ClassesTableProps) => {
   const { data: students = [] } = useQuery({
     queryKey: ['students'],
     queryFn: getAllStudents,
@@ -23,6 +31,21 @@ export const ClassesTable = ({ classes, isLoading, showStudents = false }: Class
     return studentIds
       .map(id => students.find(s => s.id === id)?.name || 'Unknown')
       .join(', ');
+  };
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
   };
 
   if (isLoading) {
@@ -66,32 +89,66 @@ export const ClassesTable = ({ classes, isLoading, showStudents = false }: Class
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Subject</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Time</TableHead>
-                <TableHead>Duration</TableHead>
-                {showStudents && <TableHead>Students</TableHead>}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {classes.map((classItem) => (
-                <TableRow key={classItem.id}>
-                  <TableCell className="font-medium">{classItem.subject}</TableCell>
-                  <TableCell>{formatDate(classItem.date)}</TableCell>
-                  <TableCell>{classItem.time}</TableCell>
-                  <TableCell>{classItem.duration} min</TableCell>
-                  {showStudents && (
-                    <TableCell className="max-w-[200px] truncate">
-                      {getStudentNames(classItem.studentIds)}
-                    </TableCell>
-                  )}
+          <motion.div
+            variants={container}
+            initial="hidden"
+            animate="show"
+          >
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Subject</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Time</TableHead>
+                  <TableHead>Duration</TableHead>
+                  {showStudents && <TableHead>Students</TableHead>}
+                  <TableHead>Room</TableHead>
+                  {showDetails && <TableHead>Category</TableHead>}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {classes.map((classItem) => (
+                  <motion.tr
+                    key={classItem.id}
+                    variants={item}
+                    className="font-medium border-b"
+                  >
+                    <TableCell className="font-medium">
+                      <div>
+                        {classItem.subject}
+                        {showDetails && classItem.description && (
+                          <p className="text-xs text-muted-foreground mt-1">{classItem.description}</p>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span>{formatDate(classItem.date)}</span>
+                        <span className="text-xs text-muted-foreground">{getDayOfWeek(classItem.date)}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>{classItem.time}</TableCell>
+                    <TableCell>{classItem.duration} min</TableCell>
+                    {showStudents && (
+                      <TableCell className="max-w-[200px] truncate">
+                        {getStudentNames(classItem.studentIds)}
+                      </TableCell>
+                    )}
+                    <TableCell>
+                      {classItem.room || 'TBD'}
+                    </TableCell>
+                    {showDetails && (
+                      <TableCell>
+                        {classItem.category && (
+                          <Badge variant="outline">{classItem.category}</Badge>
+                        )}
+                      </TableCell>
+                    )}
+                  </motion.tr>
+                ))}
+              </TableBody>
+            </Table>
+          </motion.div>
         </div>
       </CardContent>
     </Card>
