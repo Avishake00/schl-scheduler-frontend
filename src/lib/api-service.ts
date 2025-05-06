@@ -149,5 +149,36 @@ export const createClass = async (classData: Omit<Class, 'id'>): Promise<Class> 
   return newClass;
 };
 
+// Student management methods
+export const createStudent = async (studentData: Omit<Student, 'id'>): Promise<Student> => {
+  await simulateNetworkDelay();
+  const newStudent: Student = {
+    id: Math.random().toString(36).substr(2, 9),
+    ...studentData
+  };
+  
+  STUDENTS.push(newStudent);
+  return newStudent;
+};
+
+export const updateStudent = async (student: Student): Promise<Student> => {
+  await simulateNetworkDelay();
+  const index = STUDENTS.findIndex(s => s.id === student.id);
+  if (index !== -1) {
+    STUDENTS[index] = student;
+  }
+  return student;
+};
+
+export const deleteStudent = async (studentId: string): Promise<boolean> => {
+  await simulateNetworkDelay();
+  const initialLength = STUDENTS.length;
+  const index = STUDENTS.findIndex(s => s.id === studentId);
+  if (index !== -1) {
+    STUDENTS.splice(index, 1);
+  }
+  return initialLength > STUDENTS.length;
+};
+
 // Helper function to simulate network delay
 const simulateNetworkDelay = () => new Promise(resolve => setTimeout(resolve, 500));

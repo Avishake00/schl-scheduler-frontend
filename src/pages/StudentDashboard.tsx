@@ -51,6 +51,7 @@ const StudentDashboard = () => {
             classes={classes} 
             isLoading={isLoading}
             showDetails={true}
+            enableSearch={true}
           />
         </motion.div>
       </motion.div>
