@@ -198,15 +198,15 @@ export const ClassScheduleForm = ({ onClassCreated }: ClassScheduleFormProps) =>
               <Label>Assign Students</Label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-y-auto border p-2 rounded-md">
                 {students.map((student: Student) => (
-                  <div key={student.id} className="flex items-center space-x-2">
+                  <div key={student._id} className="flex items-center space-x-2">
                     <input
                       type="checkbox"
-                      id={`student-${student.id}`}
-                      checked={selectedStudents.includes(student.id)}
-                      onChange={() => handleStudentSelection(student.id)}
+                      id={`student-${student._id}`}
+                      checked={selectedStudents.includes(student._id)}
+                      onChange={() => handleStudentSelection(student._id)}
                       className="rounded text-education-primary focus:ring-education-primary"
                     />
-                    <label htmlFor={`student-${student.id}`} className="text-sm">
+                    <label htmlFor={`student-${student._id}`} className="text-sm">
                       {student.name}
                       {student.major && (
                         <span className="block text-xs text-muted-foreground">{student.major}</span>

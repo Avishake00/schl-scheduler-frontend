@@ -10,7 +10,7 @@ export interface User {
 }
 
 export interface Class {
-  id: string;
+  _id: string;
   subject: string;
   date: string;
   time: string;
@@ -24,7 +24,7 @@ export interface Class {
 }
 
 export interface Student {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   major?: string;

@@ -1,184 +1,126 @@
-
-import { Class, Student, User } from '@/types';
-
-// Mock data
-const STUDENTS: Student[] = [
-  { 
-    id: '2', 
-    name: 'Jane Doe', 
-    email: 'student@example.com',
-    major: 'Computer Science',
-    year: 2,
-    studentId: 'CS20220002'
-  },
-  { 
-    id: '3', 
-    name: 'Alex Johnson', 
-    email: 'alex@example.com',
-    major: 'Mathematics',
-    year: 3,
-    studentId: 'MT20210003'
-  },
-  { 
-    id: '4', 
-    name: 'Maria Garcia', 
-    email: 'maria@example.com',
-    major: 'Physics',
-    year: 2,
-    studentId: 'PH20220004'
-  },
-  { 
-    id: '5', 
-    name: 'Sam Lee', 
-    email: 'sam@example.com',
-    major: 'Chemistry',
-    year: 4,
-    studentId: 'CH20190005'
-  },
-];
-
-const CLASSES: Class[] = [
-  {
-    id: '1',
-    subject: 'Advanced Mathematics',
-    date: '2025-05-10',
-    time: '09:00',
-    duration: 60,
-    teacherId: '1',
-    studentIds: ['2', '3'],
-    room: 'Hall 101',
-    description: 'Covering linear algebra and calculus topics',
-    category: 'Mathematics'
-  },
-  {
-    id: '2',
-    subject: 'Quantum Physics',
-    date: '2025-05-10',
-    time: '11:00',
-    duration: 90,
-    teacherId: '1',
-    studentIds: ['2', '4'],
-    room: 'Lab 203',
-    description: 'Introduction to quantum mechanics',
-    category: 'Science'
-  },
-  {
-    id: '3',
-    subject: 'Organic Chemistry',
-    date: '2025-05-10',
-    time: '14:00',
-    duration: 60,
-    teacherId: '1',
-    studentIds: ['3', '5'],
-    room: 'Lab 105',
-    description: 'Study of carbon compounds and reactions',
-    category: 'Science'
-  },
-  {
-    id: '4',
-    subject: 'Data Structures',
-    date: '2025-05-11',
-    time: '10:00',
-    duration: 120,
-    teacherId: '1',
-    studentIds: ['2', '4'],
-    room: 'Computer Lab 302',
-    description: 'Algorithms and data structures fundamentals',
-    category: 'Computer Science'
-  },
-  {
-    id: '5',
-    subject: 'Literary Analysis',
-    date: '2025-05-12',
-    time: '13:00',
-    duration: 60,
-    teacherId: '1',
-    studentIds: ['3', '5'],
-    room: 'Room 205',
-    description: 'Critical analysis of classical literature',
-    category: 'Literature'
-  }
-];
+import { Class, Student, User } from "@/types";
+const BASE_URL = "http://localhost:5000/api";
 
 // API methods
 
-// Get classes for a student
-export const getStudentClasses = async (studentId: string): Promise<Class[]> => {
-  await simulateNetworkDelay();
-  return CLASSES.filter(c => c.studentIds.includes(studentId));
-};
+// Helper for simulating network delay
+const simulateNetworkDelay = () =>
+	new Promise((resolve) => setTimeout(resolve, 300));
 
-// Get student classes for a specific date
-export const getStudentClassesByDate = async (studentId: string, date: string): Promise<Class[]> => {
-  await simulateNetworkDelay();
-  const targetDate = new Date(date);
-  return CLASSES.filter(c => 
-    c.studentIds.includes(studentId) && 
-    new Date(c.date).toDateString() === targetDate.toDateString()
-  );
-};
 
-// Get all classes (for teacher)
+//LOGIN SERVICE
+
+export const loginStudent = async (email: string, password: string) => {
+	await simulateNetworkDelay();
+	const res = await fetch(`${BASE_URL}/students/login`, {
+	  method: 'POST',
+	  headers: {
+		'Content-Type': 'application/json',
+	  },
+	  body: JSON.stringify({ email, password }),
+	});	
+  
+	if (!res.ok) {
+	  const error = await res.json();
+	  throw new Error(error.message || 'Login failed');
+	}
+  
+	return res.json();
+  };
+  
+// ----- CLASS SERVICES -----
+
 export const getAllClasses = async (): Promise<Class[]> => {
-  await simulateNetworkDelay();
-  return [...CLASSES];
+	await simulateNetworkDelay();
+	const res = await fetch(`${BASE_URL}/classes`);
+	return res.json();
 };
 
-// Get all classes for a specific date (for teacher)
+export const deleteClassById = async (classId: string): Promise<boolean> => {
+	await simulateNetworkDelay();
+	const res = await fetch(`${BASE_URL}/classes/${classId}`, {
+		method: "DELETE",
+	});
+	return res.ok;
+};
+
+export const getClassById = async (classId: string): Promise<Class> => {
+	await simulateNetworkDelay();
+	const res = await fetch(`${BASE_URL}/classes/${classId}`);
+	return res.json();
+};
+
 export const getClassesByDate = async (date: string): Promise<Class[]> => {
-  await simulateNetworkDelay();
-  const targetDate = new Date(date);
-  return CLASSES.filter(c => new Date(c.date).toDateString() === targetDate.toDateString());
+	await simulateNetworkDelay();
+	const res = await fetch(`${BASE_URL}/classes/date/${date}`);
+	return res.json();
 };
 
-// Get all students (for teacher)
+export const getStudentClasses = async (
+	studentId: string
+): Promise<Class[]> => {
+	await simulateNetworkDelay();
+	const res = await fetch(`${BASE_URL}/classes/student/${studentId}`);
+	return res.json();
+};
+
+export const getStudentClassesByDate = async (
+	studentId: string,
+	date: string
+): Promise<Class[]> => {
+	await simulateNetworkDelay();
+	const res = await fetch(
+		`${BASE_URL}/classes/student/${studentId}/date/${date}`
+	);
+	return res.json();
+};
+
+export const createClass = async (
+	classData: Omit<Class, "_id">
+): Promise<Class> => {
+	await simulateNetworkDelay();
+	const res = await fetch(`${BASE_URL}/classes`, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(classData),
+	});
+	return res.json();
+};
+
+// ----- STUDENT SERVICES -----
+
 export const getAllStudents = async (): Promise<Student[]> => {
-  await simulateNetworkDelay();
-  return [...STUDENTS];
+	await simulateNetworkDelay();
+	const res = await fetch(`${BASE_URL}/students`);
+	return res.json();
 };
 
-// Create a new class
-export const createClass = async (classData: Omit<Class, 'id'>): Promise<Class> => {
-  await simulateNetworkDelay();
-  const newClass: Class = {
-    id: Math.random().toString(36).substr(2, 9),
-    ...classData
-  };
-  
-  CLASSES.push(newClass);
-  return newClass;
-};
-
-// Student management methods
-export const createStudent = async (studentData: Omit<Student, 'id'>): Promise<Student> => {
-  await simulateNetworkDelay();
-  const newStudent: Student = {
-    id: Math.random().toString(36).substr(2, 9),
-    ...studentData
-  };
-  
-  STUDENTS.push(newStudent);
-  return newStudent;
+export const createStudent = async (
+	studentData: Omit<Student, "_id">
+): Promise<Student> => {
+	await simulateNetworkDelay();
+	const res = await fetch(`${BASE_URL}/students`, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(studentData),
+	});
+	return res.json();
 };
 
 export const updateStudent = async (student: Student): Promise<Student> => {
-  await simulateNetworkDelay();
-  const index = STUDENTS.findIndex(s => s.id === student.id);
-  if (index !== -1) {
-    STUDENTS[index] = student;
-  }
-  return student;
+	await simulateNetworkDelay();
+	const res = await fetch(`${BASE_URL}/students/${student._id}`, {
+		method: "PUT",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(student),
+	});
+	return res.json();
 };
 
 export const deleteStudent = async (studentId: string): Promise<boolean> => {
-  await simulateNetworkDelay();
-  const initialLength = STUDENTS.length;
-  const index = STUDENTS.findIndex(s => s.id === studentId);
-  if (index !== -1) {
-    STUDENTS.splice(index, 1);
-  }
-  return initialLength > STUDENTS.length;
+	await simulateNetworkDelay();
+	const res = await fetch(`${BASE_URL}/students/${studentId}`, {
+		method: "DELETE",
+	});
+	return res.ok;
 };
-
-// Helper function to simulate network delay
-const simulateNetworkDelay = () => new Promise(resolve => setTimeout(resolve, 500));

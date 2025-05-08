@@ -1,31 +1,32 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, UserRole } from '@/types';
+import { User } from '@/types';
+import { loginStudent } from '@/lib/api-service';
+
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, role: 'teacher' | 'student') => Promise<void>;
   logout: () => void;
   error: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock users for demo
-const MOCK_USERS: User[] = [
+// Mock teachers for demo
+const MOCK_TEACHERS: User[] = [
   {
     id: '1',
     name: 'John Smith',
-    email: 'teacher@example.com',
+    email: 'teacher@gmail.com',
     role: 'teacher',
     avatar: 'https://ui-avatars.com/api/?name=John+Smith&background=3b82f6&color=fff'
   },
   {
     id: '2',
     name: 'Jane Doe',
-    email: 'student@example.com',
-    role: 'student',
+    email: 'teacher@example.com',
+    role: 'teacher',
     avatar: 'https://ui-avatars.com/api/?name=Jane+Doe&background=60a5fa&color=fff'
   }
 ];
@@ -36,7 +37,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check for saved user in localStorage
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
       setUser(JSON.parse(savedUser));
@@ -44,25 +44,41 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, role: 'teacher' | 'student') => {
     setLoading(true);
     setError(null);
-    
+
     try {
-      // Simulate API call/delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Find user by email (simplified auth for demo)
-      const foundUser = MOCK_USERS.find(u => u.email === email);
-      
-      if (foundUser && password === 'password') {
-        setUser(foundUser);
-        localStorage.setItem('user', JSON.stringify(foundUser));
+      if (role === 'teacher') {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        const foundTeacher = MOCK_TEACHERS.find(u => u.email === email);
+        if (foundTeacher && password === 'password') {
+          setUser(foundTeacher);
+          localStorage.setItem('user', JSON.stringify(foundTeacher));
+        } else {
+          throw new Error('Invalid credentials for teacher');
+        }
+
       } else {
-        throw new Error('Invalid credentials');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const res = await loginStudent(email, password); // password is studentId
+        const data = res.student;
+
+        const studentUser: User = {
+          id: data._id,
+          name: data.name,
+          email: data.email,
+          role: 'student',
+          avatar: `https://ui-avatars.com/api/?name=${data.name}&background=3b82f6&color=fff`,
+        };
+
+        setUser(studentUser);
+        localStorage.setItem('user', JSON.stringify(studentUser));
       }
+
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
     } finally {
       setLoading(false);
     }
