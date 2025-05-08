@@ -12,7 +12,7 @@ const simulateNetworkDelay = () =>
 
 export const loginStudent = async (email: string, password: string) => {
 	await simulateNetworkDelay();
-	const res = await fetch(`${BASE_URL}/students/login`, {
+	const res = await fetch(`${BASE_URL}/api/students/login`, {
 	  method: 'POST',
 	  headers: {
 		'Content-Type': 'application/json',
@@ -32,13 +32,13 @@ export const loginStudent = async (email: string, password: string) => {
 
 export const getAllClasses = async (): Promise<Class[]> => {
 	await simulateNetworkDelay();
-	const res = await fetch(`${BASE_URL}/classes`);
+	const res = await fetch(`${BASE_URL}/api/classes`);
 	return res.json();
 };
 
 export const deleteClassById = async (classId: string): Promise<boolean> => {
 	await simulateNetworkDelay();
-	const res = await fetch(`${BASE_URL}/classes/${classId}`, {
+	const res = await fetch(`${BASE_URL}/api/classes/${classId}`, {
 		method: "DELETE",
 	});
 	return res.ok;
@@ -46,13 +46,13 @@ export const deleteClassById = async (classId: string): Promise<boolean> => {
 
 export const getClassById = async (classId: string): Promise<Class> => {
 	await simulateNetworkDelay();
-	const res = await fetch(`${BASE_URL}/classes/${classId}`);
+	const res = await fetch(`${BASE_URL}/api/classes/${classId}`);
 	return res.json();
 };
 
 export const getClassesByDate = async (date: string): Promise<Class[]> => {
 	await simulateNetworkDelay();
-	const res = await fetch(`${BASE_URL}/classes/date/${date}`);
+	const res = await fetch(`${BASE_URL}/api/classes/date/${date}`);
 	return res.json();
 };
 
@@ -60,7 +60,7 @@ export const getStudentClasses = async (
 	studentId: string
 ): Promise<Class[]> => {
 	await simulateNetworkDelay();
-	const res = await fetch(`${BASE_URL}/classes/student/${studentId}`);
+	const res = await fetch(`${BASE_URL}/api/classes/student/${studentId}`);
 	return res.json();
 };
 
@@ -70,7 +70,7 @@ export const getStudentClassesByDate = async (
 ): Promise<Class[]> => {
 	await simulateNetworkDelay();
 	const res = await fetch(
-		`${BASE_URL}/classes/student/${studentId}/date/${date}`
+		`${BASE_URL}/api/classes/student/${studentId}/date/${date}`
 	);
 	return res.json();
 };
@@ -79,7 +79,7 @@ export const createClass = async (
 	classData: Omit<Class, "_id">
 ): Promise<Class> => {
 	await simulateNetworkDelay();
-	const res = await fetch(`${BASE_URL}/classes`, {
+	const res = await fetch(`${BASE_URL}/api/classes`, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(classData),
@@ -91,7 +91,7 @@ export const createClass = async (
 
 export const getAllStudents = async (): Promise<Student[]> => {
 	await simulateNetworkDelay();
-	const res = await fetch(`${BASE_URL}/students`);
+	const res = await fetch(`${BASE_URL}/api/students`);
 	return res.json();
 };
 
@@ -99,7 +99,7 @@ export const createStudent = async (
 	studentData: Omit<Student, "_id">
 ): Promise<Student> => {
 	await simulateNetworkDelay();
-	const res = await fetch(`${BASE_URL}/students`, {
+	const res = await fetch(`${BASE_URL}/api/students`, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(studentData),
@@ -109,7 +109,7 @@ export const createStudent = async (
 
 export const updateStudent = async (student: Student): Promise<Student> => {
 	await simulateNetworkDelay();
-	const res = await fetch(`${BASE_URL}/students/${student._id}`, {
+	const res = await fetch(`${BASE_URL}/api/students/${student._id}`, {
 		method: "PUT",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(student),
@@ -119,7 +119,7 @@ export const updateStudent = async (student: Student): Promise<Student> => {
 
 export const deleteStudent = async (studentId: string): Promise<boolean> => {
 	await simulateNetworkDelay();
-	const res = await fetch(`${BASE_URL}/students/${studentId}`, {
+	const res = await fetch(`${BASE_URL}/api/students/${studentId}`, {
 		method: "DELETE",
 	});
 	return res.ok;
