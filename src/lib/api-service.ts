@@ -1,5 +1,5 @@
 import { Class, Student, User } from "@/types";
-const BASE_URL = "http://localhost:5000/api";
+const BASE_URL = process.env.BACKEND_URL;
 
 // API methods
 
