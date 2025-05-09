@@ -22,26 +22,19 @@ const Login = () => {
 	const { login, loading, error } = useAuth();
 	const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-  
-    try {
-      console.log(email, password, role);
-  
-      await login(email, password,role);
-  
-      if (error) {
-        toast.error(error);
-      } else {
-        toast.success("Logged in successfully");
-        navigate("/dashboard");
-      }
-  
-    } catch (err) {
-      console.error("Login error:", err.message);
-      toast.error(err.message || "Login failed");
-    }
-  };
+ const handleSubmit = async (e: React.FormEvent) => {
+	e.preventDefault();
+
+	try {
+		await login(email, password, role);
+		toast.success('Logged in successfully');
+		navigate('/dashboard');
+	} catch (err) {
+		console.error('Login error:', err);
+		toast.error(err.message || 'Login failed');
+	}
+};
+
   
 
 	return (
